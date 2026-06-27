@@ -3,117 +3,164 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>小鑽石 Lesson 1 課後複習</title>
+  <title>小鑽石 Lesson 1 複習闖關</title>
   <style>
     :root{
-      --ink:#27313f; --muted:#667085; --paper:#fffdf8; --line:#e7e0d2;
-      --accent:#207f71; --accent-dark:#145a51; --sky:#dff0ff; --rose:#ffe4ec; --sun:#ffe9a8; --mint:#dff5e7;
+      --ink:#2c2433; --muted:#8a7d92; --paper:#fffdf8; --line:#f0d9e6;
+      --accent:#e85a9b; --accent-dark:#c23d7d; --gem:#43b3e0; --gem-dark:#2487b5;
+      --mint:#dff5e7; --green:#3aa66b; --sun:#ffe9a8; --sky:#e3f3fb; --rose:#ffe4ec;
     }
     *{box-sizing:border-box;}
     body{
-      margin:0; min-height:100vh; color:var(--ink); padding:18px;
+      margin:0; min-height:100vh; color:var(--ink); padding:16px 14px 60px;
       font-family:ui-rounded,"SF Pro Rounded","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-      background:linear-gradient(180deg,#fffdf8,#f4f9ff);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(232,90,155,.10), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(67,179,224,.12), transparent 32%),
+        linear-gradient(180deg,#fffdf8,#fdf3f8);
     }
-    .wrap{max-width:760px;margin:0 auto;}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    h1{font-size:clamp(24px,5vw,38px);margin:0;}
-    .progress{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-weight:800;color:var(--accent-dark);}
-    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0;}
-    .tabs button{flex:1 1 30%;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:12px;font-weight:800;font-size:17px;min-height:48px;cursor:pointer;}
-    .game-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0;}
-    button.opt{border:2px solid var(--accent);background:#fff;color:var(--accent-dark);border-radius:12px;padding:14px 18px;font-weight:900;font-size:20px;min-height:54px;cursor:pointer;}
-    button.opt:active{background:var(--mint);}
-    button.opt.wide{display:block;width:100%;margin:8px 0;font-size:19px;text-align:center;}
-    .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .card{
-      border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px 16px 14px;margin-bottom:14px;
-    }
-    .card .who{font-weight:900;color:var(--accent-dark);font-size:14px;letter-spacing:.04em;}
-    .card .en{font-size:clamp(24px,5.5vw,34px);font-weight:900;line-height:1.15;margin:4px 0 2px;}
-    .card .zh{color:var(--muted);font-size:15px;margin-bottom:10px;}
-    .kk{color:var(--accent-dark);font-weight:700;font-size:16px;}
+    .wrap{max-width:780px;margin:0 auto;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+    h1{font-size:clamp(22px,5vw,34px);margin:0;color:var(--accent-dark);}
+    h1 .gem{font-size:.9em;}
+    .pre-link{font-weight:800;color:var(--gem-dark);text-decoration:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;}
+    .hint{color:var(--muted);font-size:13px;margin:4px 0 14px;}
+
+    /* 進度條闖關 */
+    .progress-bar{position:sticky;top:0;z-index:50;background:rgba(255,253,248,.94);backdrop-filter:blur(6px);
+      border:1px solid var(--line);border-radius:14px;padding:10px 8px;margin-bottom:16px;}
+    .dots{display:flex;align-items:center;gap:4px;overflow-x:auto;}
+    .dot{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px;cursor:pointer;}
+    .dot .bubble{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:20px;
+      background:#fff;border:2px solid var(--line);transition:.2s;}
+    .dot .lbl{font-size:10.5px;color:var(--muted);font-weight:700;text-align:center;line-height:1.1;}
+    .dot.done .bubble{background:var(--green);border-color:var(--green);color:#fff;}
+    .dot.done .lbl{color:var(--green);}
+    .dot.cur .bubble{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,90,155,.18);}
+
+    .stage{border:1px solid var(--line);border-radius:18px;background:#fff;padding:16px;margin-bottom:18px;
+      box-shadow:0 3px 10px rgba(180,120,150,.07);scroll-margin-top:80px;}
+    .stage-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+    .stage-icon{font-size:26px;}
+    .stage-title{font-size:18px;font-weight:900;color:var(--accent-dark);}
+    .stage-sub{font-size:12.5px;color:var(--muted);margin:0 0 12px 36px;}
+    .stage.cleared{border-color:var(--green);}
+    .stage-badge{margin-left:auto;font-size:12px;font-weight:800;color:var(--green);}
+
+    .card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;margin-bottom:12px;}
+    .card .who{font-weight:900;color:var(--gem-dark);font-size:13px;}
+    .card .en{font-size:clamp(20px,4.6vw,28px);font-weight:900;line-height:1.18;margin:3px 0 2px;}
+    .card .zh{color:var(--muted);font-size:14px;margin-bottom:8px;}
+    .kk{color:var(--accent-dark);font-weight:700;font-size:15px;}
     .row{display:flex;flex-wrap:wrap;gap:8px;}
-    button.act{border:0;border-radius:10px;padding:12px 16px;min-height:50px;font-weight:900;font-size:16px;cursor:pointer;}
-    .listen{background:#fff;color:var(--accent-dark);border:2px solid var(--accent);}
+    button.act{border:0;border-radius:10px;padding:11px 15px;min-height:48px;font-weight:900;font-size:15px;cursor:pointer;}
+    .listen{background:#fff;color:var(--gem-dark);border:2px solid var(--gem);}
     .start{background:var(--accent);color:#fff;}
     .stop{background:#b54708;color:#fff;}
     button:disabled{opacity:.5;cursor:not-allowed;}
-    .out{margin-top:10px;font-size:16px;min-height:24px;color:var(--muted);}
-    .stars{font-size:26px;letter-spacing:2px;margin-top:6px;}
-    .hide{display:none;}
-    .hint{color:var(--muted);font-size:13px;margin:6px 0 14px;}
+    .out{margin-top:9px;font-size:15px;min-height:22px;color:var(--muted);}
+    .stars{font-size:24px;letter-spacing:2px;margin-top:5px;}
+
+    .game-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0;}
+    button.opt{border:2px solid var(--accent);background:#fff;color:var(--accent-dark);border-radius:12px;
+      padding:13px 16px;font-weight:900;font-size:18px;min-height:52px;cursor:pointer;}
+    button.opt.wide{display:block;width:100%;margin:7px 0;font-size:18px;text-align:center;}
+    button.opt.gem{border-color:var(--gem);color:var(--gem-dark);}
+    button.opt:active{background:var(--mint);}
+    .big{font-size:clamp(26px,7vw,40px);font-weight:900;color:var(--accent-dark);}
+
+    .banner{display:none;text-align:center;border:2px dashed var(--accent);border-radius:18px;
+      background:linear-gradient(180deg,#fff,#fff0f7);padding:22px;margin-top:8px;}
+    .banner.show{display:block;}
+    .banner .big{font-size:clamp(24px,6vw,34px);}
   </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>小鑽石 Lesson 1 複習 🎤</h1>
-    <div class="progress" id="progress">0 / 0</div>
+    <h1><span class="gem">💎</span> 小鑽石 Lesson 1 複習</h1>
+    <a class="pre-link" href="./lesson1-pre.html?v=v2-20260627">← 回預習</a>
   </header>
-  <p class="hint">用平板的 Chrome 分頁開。先按「🔊 聽」聽一次，再按「🎤 開始念」，念完按「⏹ 念好了」就會打星。第一次按開始念要允許麥克風。</p>
+  <p class="hint">用平板的 Chrome 分頁開。一關一關闖：先按「🔊 聽」，再按「🎤 開始念」，念完按「⏹ 念好了」就打星。遊戲關不用麥克風。第一次念要允許麥克風。</p>
 
-  <div class="tabs">
-    <button id="tab-dialog" class="active" onclick="switchTab('dialog')">對話</button>
-    <button id="tab-vocab" onclick="switchTab('vocab')">單字</button>
-    <button id="tab-grammar" onclick="switchTab('grammar')">文法</button>
-    <button id="tab-wordgame" onclick="switchTab('wordgame')">單字遊戲</button>
-    <button id="tab-talkgame" onclick="switchTab('talkgame')">對話遊戲</button>
+  <div class="progress-bar"><div class="dots" id="dots"></div></div>
+
+  <div id="stages"></div>
+
+  <div class="banner" id="banner">
+    <div class="big">🎉 全部闖關成功！</div>
+    <div style="margin-top:8px;color:var(--muted)">小鑽石超棒！6 關全破關 ✨ 記得去上課大聲說 Hello！</div>
   </div>
-
-  <div id="panel-dialog"></div>
-  <div id="panel-vocab" class="hide"></div>
-  <div id="panel-grammar" class="hide"></div>
-  <div id="panel-wordgame" class="hide"></div>
-  <div id="panel-talkgame" class="hide"></div>
 </div>
 
 <script>
-/* ===== TEAMMS 小鑽石 Lesson 1 內容（內嵌，不用模組） =====
-   主題：Hello! / How are you?　角色：Sam（男）、Ann（女） */
+/* ===================================================================
+   TEAMMS 貝兒國際美語 · 小鑽石 Lesson 1「Hello! How are you?」
+   內容全部來自課本照片：主對話 Sam&Ann、Listen and Do 的 Mary&Tom、
+   Conversation Practice 配對、O/X 對錯題、STEM Skill（measure/compare/
+   observe/sort＋數名字長度）。
+   技術：複習頁只用 speechSynthesis，絕不碰 HTML5 Audio（iOS 麥克風鐵律）。
+=================================================================== */
+
+/* ---- 主對話：Sam & Ann（校車站）---- */
 var dialogueLines = [
   {speaker:"Sam", text:"Hello! How are you?", role:"sam", zh:"哈囉！你好嗎？"},
   {speaker:"Ann", text:"I'm great. How about you?", role:"ann", zh:"我很好。你呢？"},
   {speaker:"Sam", text:"I'm fine, thank you. My name is Sam. What's your name?", role:"sam", zh:"我很好，謝謝。我叫 Sam。你叫什麼名字？"},
   {speaker:"Ann", text:"My name is Ann.", role:"ann", zh:"我叫 Ann。"},
 ];
+/* ---- 10 個招呼語（每字一個情境圖示）---- */
 var vocab = [
-  {word:"fine", kk:"[faɪn]", zh:"好的、不錯"},
-  {word:"great", kk:"[ɡret]", zh:"很棒"},
-  {word:"name", kk:"[nem]", zh:"名字"},
-  {word:"thank you", kk:"[θæŋk ju]", zh:"謝謝你"},
-  {word:"see you later", kk:"[si ju ˈletɚ]", zh:"待會見"},
-  {word:"goodbye", kk:"[ˌɡʊdˈbaɪ]", zh:"再見"},
-  {word:"nice to meet you", kk:"[naɪs tu mit ju]", zh:"很高興認識你"},
-  {word:"good morning", kk:"[ɡʊd ˈmɔrnɪŋ]", zh:"早安"},
-  {word:"good afternoon", kk:"[ɡʊd ˌæftɚˈnun]", zh:"午安"},
-  {word:"good evening", kk:"[ɡʊd ˈivnɪŋ]", zh:"晚安（傍晚見面）"},
+  {word:"fine", kk:"[faɪn]", zh:"好的、不錯", emo:"🙂"},
+  {word:"great", kk:"[ɡret]", zh:"很棒", emo:"😄"},
+  {word:"name", kk:"[nem]", zh:"名字", emo:"🏷️"},
+  {word:"thank you", kk:"[θæŋk ju]", zh:"謝謝你", emo:"🙏"},
+  {word:"see you later", kk:"[si ju ˈletɚ]", zh:"待會見", emo:"👋"},
+  {word:"goodbye", kk:"[ˌɡʊdˈbaɪ]", zh:"再見", emo:"👋"},
+  {word:"nice to meet you", kk:"[naɪs tu mit ju]", zh:"很高興認識你", emo:"🤝"},
+  {word:"good morning", kk:"[ɡʊd ˈmɔrnɪŋ]", zh:"早安", emo:"🌅"},
+  {word:"good afternoon", kk:"[ɡʊd ˌæftɚˈnun]", zh:"午安", emo:"☀️"},
+  {word:"good evening", kk:"[ɡʊd ˈivnɪŋ]", zh:"晚安（傍晚）", emo:"🌆"},
 ];
-/* 文法：縮寫 I'm = I am，What's = What is（小二只做配對選擇） */
-var grammar = {
-  rule:"縮寫小魔術：I'm = I am，What's = What is。短短的念起來一樣喔！",
-  quiz:[
-    {short:"I'm", answer:"I am", full:"I'm fine.", fz:"我很好。"},
-    {short:"What's", answer:"What is", full:"What's your name?", fz:"你叫什麼名字？"},
-    {short:"I'm", answer:"I am", full:"I'm great.", fz:"我很棒。"},
-    {short:"What's", answer:"What is", full:"What's your name?", fz:"你叫什麼名字？"},
-  ],
-  options:["I am","What is","You are"],
-};
+/* ---- 對話配對（課本 Conversation Practice Part A）---- */
+var talkPairs=[
+  {q:"What's your name?", a:"My name is Ann.", d:["I'm great.","Good morning."]},
+  {q:"How are you?", a:"I'm fine, thank you.", d:["My name is Sam.","See you later."]},
+  {q:"Nice to meet you.", a:"Nice to meet you, too.", d:["Goodbye.","I'm great."]},
+  {q:"Good afternoon! What's your name?", a:"My name is Tom.", d:["I'm fine.","Thank you."]},
+  {q:"Hello! How are you?", a:"I'm great. How about you?", d:["Good evening.","My name is Ann."]},
+];
+/* ---- 對錯偵探（課本 O/X 題：大小寫 / 標點）---- */
+var checkItems=[
+  {text:"how are you?", ok:false, fix:"開頭要大寫、句尾問號：How are you?"},
+  {text:"My name is Sam.", ok:true,  fix:""},
+  {text:"My name is tom.", ok:false, fix:"名字 Tom 開頭要大寫：My name is Tom."},
+  {text:"Good morning.", ok:true,  fix:""},
+  {text:"what's your name?", ok:false, fix:"開頭要大寫：What's your name?"},
+  {text:"Nice to meet you.", ok:true,  fix:""},
+];
+/* ---- STEM Skill：科學家動作字（聽音選字）---- */
+var stemWords=[
+  {word:"measure", zh:"測量", emo:"📏"},
+  {word:"compare", zh:"比較", emo:"⚖️"},
+  {word:"observe", zh:"觀察", emo:"🔍"},
+  {word:"sort", zh:"分類", emo:"🗂️"},
+];
+/* ---- STEM Measuring：數名字有幾個字母（課本量名牌活動）---- */
+var nameQuiz=[
+  {ask:"誰的名字最短？（字母最少）", names:["Tom","Lily","Jean","Anne"], answer:"Tom"},
+  {ask:"誰的名字最長？（字母最多）", names:["Tiffany","Jefferson","Nancy","Mary"], answer:"Jefferson"},
+];
 
 /* ===== 評分（內嵌） ===== */
-var contractions = {"i'm":"i am","im":"i am","what's":"what is","whats":"what is","don't":"do not","dont":"do not","let's":"let us","lets":"let us"};
-function normalizeSpeech(v){
-  var s=String(v||"").toLowerCase();
-  for(var k in contractions){ s=s.split(k).join(contractions[k]); }
-  return s.replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
-}
-function scoreSpeech(expected, heard){
+var contractions={"i'm":"i am","im":"i am","what's":"what is","whats":"what is","don't":"do not","dont":"do not","let's":"let us","lets":"let us"};
+function normalizeSpeech(v){var s=String(v||"").toLowerCase();for(var k in contractions){s=s.split(k).join(contractions[k]);}return s.replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
+function scoreSpeech(expected,heard){
   var e=normalizeSpeech(expected).split(" ").filter(Boolean);
   var h=normalizeSpeech(heard).split(" ").filter(Boolean);
   if(!h.length) return {stars:0};
-  var cur=0, matched=0;
-  for(var i=0;i<e.length;i++){ var at=h.indexOf(e[i],cur); if(at!==-1){matched++;cur=at+1;} }
+  var cur=0,matched=0;
+  for(var i=0;i<e.length;i++){var at=h.indexOf(e[i],cur);if(at!==-1){matched++;cur=at+1;}}
   var coverage=matched/Math.max(e.length,1);
   var penalty=Math.max(h.length-e.length-2,0)*0.04;
   var pct=Math.max(0,Math.min(1,coverage-penalty));
@@ -124,283 +171,287 @@ function scoreSpeech(expected, heard){
   return {stars:stars};
 }
 
-/* ===== 星星儲存 ===== */
-var SCORE_KEY="teamms-diamond-l1-scores";
-function loadScores(){ try{ var a=JSON.parse(localStorage.getItem(SCORE_KEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
-function saveScores(a){ try{ localStorage.setItem(SCORE_KEY, JSON.stringify(a)); }catch(e){} }
-var scores = loadScores();
-var VOCAB_KEY="teamms-diamond-l1-vocab";
-function loadVocab(){ try{ var a=JSON.parse(localStorage.getItem(VOCAB_KEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
-function saveVocab(a){ try{ localStorage.setItem(VOCAB_KEY, JSON.stringify(a)); }catch(e){} }
-var vScores = loadVocab();
+/* ===== 儲存 ===== */
+function lsGet(k,def){ try{ var a=JSON.parse(localStorage.getItem(k)); return a==null?def:a; }catch(e){ return def; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var scores=lsGet("teamms-diamond-l1-scores",[]); if(!Array.isArray(scores))scores=[];
+var vScores=lsGet("teamms-diamond-l1-vocab",[]); if(!Array.isArray(vScores))vScores=[];
+var cleared=lsGet("teamms-diamond-l1-cleared",{}); if(typeof cleared!=="object"||!cleared)cleared={};
 
-/* ===== Telegram 過關推播 ===== */
+/* ===== Telegram ===== */
 var TG_TOKEN="8737495847:AAF0UODT6S4MLFnPUpx5lnZCaM0iDK5Sefc";
 var TG_CHAT="-5062576908";
-function notify(msg){
-  try{
-    fetch("https://api.telegram.org/bot"+TG_TOKEN+"/sendMessage",{
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({chat_id:TG_CHAT, text:msg})
-    }).catch(function(){});
-  }catch(e){}
-}
-var notified={}; // 同一個分頁裡每種訊息只推一次，避免洗版
-function notifyOnce(key,msg){ if(notified[key]) return; notified[key]=true; notify(msg); }
+function notify(msg){ try{ fetch("https://api.telegram.org/bot"+TG_TOKEN+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_CHAT,text:msg})}).catch(function(){}); }catch(e){} }
+var notified={};
+function notifyOnce(key,msg){ if(notified[key])return; notified[key]=true; notify(msg); }
 
-/* ===== 示範語音：只用 speechSynthesis（不用任何 HTML5 Audio） ===== */
+/* ===== 語音（只用 speechSynthesis） ===== */
 var BAD_VOICE=/Fred|Albert|Zarvox|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Grandma|Grandpa|Rocko|Shelley|Sandy|Flo|Eddy|Reed|Rishi/i;
 var speakSeq=0;
 function pickVoice(role){
   var vs=(window.speechSynthesis&&speechSynthesis.getVoices&&speechSynthesis.getVoices())||[];
   var en=vs.filter(function(v){return /en[-_](US|GB|AU)/i.test(v.lang);});
   if(!en.length) return null;
-  var good=en.filter(function(v){return !BAD_VOICE.test(v.name);});
-  if(!good.length) good=en;
-  function best(list){ return list.find(function(v){return /enhanced|premium|siri/i.test(v.name+'|'+(v.voiceURI||''));}) || list[0]; }
-  var pref = role==="sam"?["Aaron","Tom","Nathan","Arthur","Daniel","Alex"]
-    : ["Samantha","Allison","Ava","Karen","Aaron"]; // ann / together 用女聲
-  for(var i=0;i<pref.length;i++){
-    var hits=good.filter(function(v){return v.name.indexOf(pref[i])>=0;});
-    if(hits.length) return best(hits);
-  }
+  var good=en.filter(function(v){return !BAD_VOICE.test(v.name);}); if(!good.length) good=en;
+  function best(list){ return list.find(function(v){return /enhanced|premium|siri/i.test(v.name+'|'+(v.voiceURI||''));})||list[0]; }
+  var pref = role==="sam"?["Aaron","Tom","Nathan","Arthur","Daniel","Alex"]:["Samantha","Allison","Ava","Karen","Aaron"];
+  for(var i=0;i<pref.length;i++){ var hits=good.filter(function(v){return v.name.indexOf(pref[i])>=0;}); if(hits.length) return best(hits); }
   return best(good);
 }
-function speak(text, role, onEnd){
-  var seq=++speakSeq, done=false;
-  function finish(){ if(done || seq!==speakSeq) return; done=true; if(onEnd) onEnd(); }
+function speak(text,role,onEnd){
+  var seq=++speakSeq,done=false;
+  function finish(){ if(done||seq!==speakSeq)return; done=true; if(onEnd)onEnd(); }
   try{
     window.speechSynthesis.cancel();
     var u=new SpeechSynthesisUtterance(text);
-    u.lang="en-US"; u.rate=0.82; u.volume=1;
-    u.pitch = role==="sam"?0.85 : 1.08; // Sam 壓低當男孩、Ann 高一點
-    var v=pickVoice(role); if(v) u.voice=v;
+    u.lang="en-US"; u.rate=0.82; u.volume=1; u.pitch=role==="sam"?0.85:1.08;
+    var v=pickVoice(role); if(v)u.voice=v;
     if(onEnd){ u.onend=finish; u.onerror=finish; }
     window.speechSynthesis.speak(u);
   }catch(e){ finish(); }
 }
 
-/* ===== 語音辨識：1:1 照搬已驗證可用的 rec() ===== */
+/* ===== 辨識（1:1 照搬已驗證可用版） ===== */
 function SR(){ return window.SpeechRecognition||window.webkitSpeechRecognition; }
-var srSupported = !!SR();
-function rec(id, cb){
-  var C=SR(),
-      out=document.getElementById(id+'-out'),
-      start=document.getElementById(id+'-start'),
-      stop=document.getElementById(id+'-stop');
-  if(!C){ if(out) out.textContent='此瀏覽器不支援語音辨識。'; return; }
-  var text='', stopped=false, gotAny=false;
-  var r=new C();
-  r.lang='en-US'; r.continuous=true; r.interimResults=false;
-  r.onaudiostart=function(){ if(out) out.textContent='🎙 收音中…請大聲念'; };
-  r.onresult=function(e){
-    for(var i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) text+=e.results[i][0].transcript+' '; }
-    gotAny=true; if(out) out.textContent='👂 聽到：'+(text.trim()||'(空)');
-  };
-  r.onerror=function(e){ if(out) out.textContent='🔴 辨識問題：'+(e.error||'未知'); };
-  r.onend=function(){
-    if(!stopped){ setTimeout(function(){ try{r.start();}catch(_){}} ,120); return; }
-    if(start) start.disabled=false;
-    if(stop) stop.disabled=true;
-    if(!gotAny && out) out.textContent='⏹ 沒收到字，再按一次「開始念」。';
-    cb(text.trim());
-  };
-  if(start) start.disabled=true;
+var srSupported=!!SR();
+function rec(id,cb){
+  var C=SR(),out=document.getElementById(id+'-out'),start=document.getElementById(id+'-start'),stop=document.getElementById(id+'-stop');
+  if(!C){ if(out)out.textContent='此瀏覽器不支援語音辨識。'; return; }
+  var text='',stopped=false,gotAny=false;
+  var r=new C(); r.lang='en-US'; r.continuous=true; r.interimResults=false;
+  r.onaudiostart=function(){ if(out)out.textContent='🎙 收音中…請大聲念'; };
+  r.onresult=function(e){ for(var i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) text+=e.results[i][0].transcript+' '; } gotAny=true; if(out)out.textContent='👂 聽到：'+(text.trim()||'(空)'); };
+  r.onerror=function(e){ if(out)out.textContent='🔴 辨識問題：'+(e.error||'未知'); };
+  r.onend=function(){ if(!stopped){ setTimeout(function(){ try{r.start();}catch(_){}} ,120); return; } if(start)start.disabled=false; if(stop)stop.disabled=true; if(!gotAny&&out)out.textContent='⏹ 沒收到字，再按一次「開始念」。'; cb(text.trim()); };
+  if(start)start.disabled=true;
   if(stop){ stop.disabled=false; stop.onclick=function(){ stopped=true; try{r.stop();}catch(_){} setTimeout(function(){ try{r.abort();}catch(_){}} ,1200); }; }
   try{ window.speechSynthesis.cancel(); }catch(_){}
-  if(out) out.textContent='🎙 啟動中…';
-  setTimeout(function(){ try{ r.start(); }catch(e){ if(start) start.disabled=false; if(stop) stop.disabled=true; if(out) out.textContent='請再按一次「開始念」。'; } }, 350);
+  if(out)out.textContent='🎙 啟動中…';
+  setTimeout(function(){ try{ r.start(); }catch(e){ if(start)start.disabled=false; if(stop)stop.disabled=true; if(out)out.textContent='請再按一次「開始念」。'; } },350);
 }
 
-/* ===== 畫面 ===== */
-function starStr(n){ var s=''; for(var i=0;i<5;i++) s+= i<n?'⭐':'☆'; return s; }
+/* ===== 闖關架構 ===== */
+var STAGES=[
+  {key:"dialog", icon:"💬", title:"對話跟讀", sub:"聽 Sam 和 Ann 說話，再跟著唸"},
+  {key:"vocab",  icon:"🔤", title:"單字跟讀", sub:"10 個招呼語，每個念念看"},
+  {key:"match",  icon:"🎯", title:"連連看",   sub:"聽招呼語，點對的中文"},
+  {key:"talk",   icon:"🗣️", title:"對話配對", sub:"別人說一句，選對的回答"},
+  {key:"check",  icon:"✅", title:"對錯偵探", sub:"句子對的圈、錯的叉"},
+  {key:"stem",   icon:"🔬", title:"STEM 闖關", sub:"科學家動作＋數名字長度"},
+];
+function starStr(n){ var s='';for(var i=0;i<5;i++)s+=i<n?'⭐':'☆'; return s; }
+function markCleared(key,msg){
+  if(cleared[key]) return;
+  cleared[key]=true; lsSet("teamms-diamond-l1-cleared",cleared);
+  notifyOnce(key,msg); renderDots(); markStageUI(key); checkAllDone();
+}
+function markStageUI(key){
+  var st=document.getElementById('stage-'+key); if(!st) return;
+  st.classList.toggle('cleared',!!cleared[key]);
+  var b=document.getElementById('badge-'+key); if(b) b.textContent=cleared[key]?'✅ 過關':'';
+}
+function checkAllDone(){
+  var all=STAGES.every(function(s){return cleared[s.key];});
+  document.getElementById('banner').classList.toggle('show',all);
+  if(all) notifyOnce('all','🎉 小鑽石把 Lesson 1 複習 6 關全部闖關成功了！👏✨');
+}
+function renderDots(){
+  document.getElementById('dots').innerHTML=STAGES.map(function(s){
+    return '<div class="dot'+(cleared[s.key]?' done':'')+'" onclick="goStage(\''+s.key+'\')">'
+      +'<div class="bubble">'+(cleared[s.key]?'✓':s.icon)+'</div><div class="lbl">'+s.title+'</div></div>';
+  }).join('');
+}
+function goStage(key){ var el=document.getElementById('stage-'+key); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
 
-function updateProgress(){
-  var done=dialogueLines.filter(function(_,i){ return (scores[i]||0)>=3; }).length;
-  document.getElementById('progress').textContent=done+' / '+dialogueLines.length+' 句';
-  if(done===dialogueLines.length) notifyOnce('dialog','🐣 小鑽石 把 Lesson 1 的對話全部念過關了！👏');
+/* ---- 建立所有關卡外框 ---- */
+function buildShell(){
+  document.getElementById('stages').innerHTML=STAGES.map(function(s){
+    return '<section class="stage'+(cleared[s.key]?' cleared':'')+'" id="stage-'+s.key+'">'
+      +'<div class="stage-head"><span class="stage-icon">'+s.icon+'</span><span class="stage-title">'+s.title+'</span>'
+      +'<span class="stage-badge" id="badge-'+s.key+'">'+(cleared[s.key]?'✅ 過關':'')+'</span></div>'
+      +'<p class="stage-sub">'+s.sub+'</p><div id="body-'+s.key+'"></div></section>';
+  }).join('');
 }
 
+/* ===== 關卡 1：對話跟讀 ===== */
 function buildDialog(){
   var html='';
   dialogueLines.forEach(function(l,i){
     var id='d'+i;
-    html+='<div class="card">';
-    html+='<div class="who">'+l.speaker+'</div>';
-    html+='<div class="en">'+l.text+'</div>';
-    html+='<div class="zh">'+l.zh+'</div>';
-    html+='<div class="row">';
-    html+='<button class="act listen" onclick="speak('+JSON.stringify(l.text).replace(/"/g,'&quot;')+',\''+l.role+'\')">🔊 聽</button>';
-    html+='<button class="act start" id="'+id+'-start" onclick="recLine('+i+')">🎤 開始念</button>';
-    html+='<button class="act stop" id="'+id+'-stop" disabled>⏹ 念好了</button>';
-    html+='</div>';
-    html+='<div class="out" id="'+id+'-out"></div>';
-    html+='<div class="stars" id="'+id+'-stars">'+starStr(scores[i]||0)+'</div>';
-    html+='</div>';
+    html+='<div class="card"><div class="who">'+l.speaker+'</div><div class="en">'+l.text+'</div><div class="zh">'+l.zh+'</div>'
+      +'<div class="row">'
+      +'<button class="act listen" onclick="speak('+js(l.text)+',\''+l.role+'\')">🔊 聽</button>'
+      +'<button class="act start" id="'+id+'-start" onclick="recLine('+i+')">🎤 開始念</button>'
+      +'<button class="act stop" id="'+id+'-stop" disabled>⏹ 念好了</button></div>'
+      +'<div class="out" id="'+id+'-out"></div><div class="stars" id="'+id+'-stars">'+starStr(scores[i]||0)+'</div></div>';
   });
-  document.getElementById('panel-dialog').innerHTML=html;
+  document.getElementById('body-dialog').innerHTML=html;
 }
 function recLine(i){
-  rec('d'+i, function(heard){
-    if(!heard) return;
-    var s=scoreSpeech(dialogueLines[i].text, heard).stars;
-    scores[i]=Math.max(scores[i]||0, s);
-    saveScores(scores);
+  rec('d'+i,function(heard){
+    if(!heard)return;
+    var s=scoreSpeech(dialogueLines[i].text,heard).stars;
+    scores[i]=Math.max(scores[i]||0,s); lsSet("teamms-diamond-l1-scores",scores);
     document.getElementById('d'+i+'-stars').textContent=starStr(s);
     document.getElementById('d'+i+'-out').textContent='👂 '+heard+'　→　'+s+' 顆星';
-    updateProgress();
+    if(dialogueLines.every(function(_,k){return (scores[k]||0)>=3;})) markCleared('dialog','💬 小鑽石 對話跟讀全部 3 星以上過關！');
   });
 }
 
+/* ===== 關卡 2：單字跟讀 ===== */
 function buildVocab(){
   var html='';
   vocab.forEach(function(w,i){
     var id='v'+i;
-    html+='<div class="card">';
-    html+='<div class="en">'+w.word+' <span class="kk">'+w.kk+'</span></div>';
-    html+='<div class="zh">'+w.zh+'</div>';
-    html+='<div class="row">';
-    html+='<button class="act listen" onclick="speak('+JSON.stringify(w.word).replace(/"/g,'&quot;')+',\'together\')">🔊 聽</button>';
-    html+='<button class="act start" id="'+id+'-start" onclick="recVocab('+i+')">🎤 開始念</button>';
-    html+='<button class="act stop" id="'+id+'-stop" disabled>⏹ 念好了</button>';
-    html+='</div>';
-    html+='<div class="out" id="'+id+'-out"></div>';
-    html+='<div class="stars" id="'+id+'-stars">'+starStr(vScores[i]||0)+'</div>';
-    html+='</div>';
+    html+='<div class="card"><div class="en">'+w.emo+' '+w.word+' <span class="kk">'+w.kk+'</span></div><div class="zh">'+w.zh+'</div>'
+      +'<div class="row">'
+      +'<button class="act listen" onclick="speak('+js(w.word)+',\'together\')">🔊 聽</button>'
+      +'<button class="act start" id="'+id+'-start" onclick="recVocab('+i+')">🎤 開始念</button>'
+      +'<button class="act stop" id="'+id+'-stop" disabled>⏹ 念好了</button></div>'
+      +'<div class="out" id="'+id+'-out"></div><div class="stars" id="'+id+'-stars">'+starStr(vScores[i]||0)+'</div></div>';
   });
-  document.getElementById('panel-vocab').innerHTML=html;
+  document.getElementById('body-vocab').innerHTML=html;
 }
 function recVocab(i){
-  rec('v'+i, function(heard){
-    if(!heard) return;
-    var s=scoreSpeech(vocab[i].word, heard).stars;
-    vScores[i]=Math.max(vScores[i]||0, s);
-    saveVocab(vScores);
+  rec('v'+i,function(heard){
+    if(!heard)return;
+    var s=scoreSpeech(vocab[i].word,heard).stars;
+    vScores[i]=Math.max(vScores[i]||0,s); lsSet("teamms-diamond-l1-vocab",vScores);
     document.getElementById('v'+i+'-stars').textContent=starStr(s);
     document.getElementById('v'+i+'-out').textContent='👂 '+heard+'　→　'+s+' 顆星';
+    if(vocab.every(function(_,k){return (vScores[k]||0)>=3;})) markCleared('vocab','🔤 小鑽石 10 個招呼語跟讀全部過關！');
   });
 }
 
-/* ===== 小遊戲共用 ===== */
-function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+/* ===== 共用 ===== */
+function js(x){ return JSON.stringify(x).replace(/"/g,'&quot;'); }
+function shuffle(a){ a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
 
-/* ===== 單字遊戲：念一個字，點對那個字 ===== */
-var wgOrder=[], wgPos=0, wgScore=0;
-function wgStart(){
-  wgOrder=shuffle(vocab.map(function(_,i){return i;}));
-  wgPos=0; wgScore=0;
-  wgRender();
-}
-function wgRender(){
-  var p=document.getElementById('panel-wordgame');
-  if(wgPos>=wgOrder.length){
-    p.innerHTML='<div class="card" style="text-align:center"><div class="en">🎉 全部過關！</div><div class="zh">答對 '+wgScore+' / '+wgOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="wgStart()">再玩一次</button></div></div>';
-    notifyOnce('wordgame','🐣 小鑽石 完成 Lesson 1 單字遊戲！答對 '+wgScore+' / '+wgOrder.length+' ⭐');
-    return;
+/* ===== 關卡 3：連連看（聽招呼語→點中文） ===== */
+var mgOrder=[],mgPos=0,mgScore=0;
+function mgStart(){ mgOrder=shuffle(vocab.map(function(_,i){return i;})); mgPos=0; mgScore=0; mgRender(); }
+function mgRender(){
+  var p=document.getElementById('body-match');
+  if(mgPos>=mgOrder.length){
+    p.innerHTML='<div class="card" style="text-align:center"><div class="big">🎉 連連看全對！</div><div class="zh">答對 '+mgScore+' / '+mgOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="mgStart()">再玩一次</button></div></div>';
+    markCleared('match','🎯 小鑽石 完成連連看！答對 '+mgScore+' / '+mgOrder.length); return;
   }
-  var target=wgOrder[wgPos];
-  var html='<div class="card" style="text-align:center">';
-  html+='<div class="zh">第 '+(wgPos+1)+' / '+wgOrder.length+' 題　答對 '+wgScore+'</div>';
-  html+='<div class="en">聽一聽，點出那個字 👂</div>';
-  html+='<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+JSON.stringify(vocab[target].word).replace(/"/g,'&quot;')+',\'together\')">🔊 再聽一次</button></div>';
-  html+='<div id="wg-grid" class="game-grid">';
-  vocab.forEach(function(w,i){
-    html+='<button class="opt" onclick="wgPick('+i+','+target+')">'+w.word+'</button>';
-  });
-  html+='</div><div class="out" id="wg-out"></div></div>';
-  p.innerHTML=html;
-  setTimeout(function(){ speak(vocab[target].word,'together'); }, 250);
+  var t=mgOrder[mgPos];
+  var opts=shuffle([t].concat(shuffle(vocab.map(function(_,i){return i;}).filter(function(i){return i!==t;})).slice(0,3)));
+  var h='<div class="card" style="text-align:center"><div class="zh">第 '+(mgPos+1)+' / '+mgOrder.length+' 題　答對 '+mgScore+'</div>'
+    +'<div class="en">聽一聽，這是什麼意思？👂</div>'
+    +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(vocab[t].word)+',\'together\')">🔊 再聽一次</button></div>'
+    +'<div class="game-grid">';
+  opts.forEach(function(i){ h+='<button class="opt gem" onclick="mgPick('+i+','+t+')">'+vocab[i].emo+' '+vocab[i].zh+'</button>'; });
+  h+='</div><div class="out" id="mg-out"></div></div>';
+  p.innerHTML=h;
+  setTimeout(function(){ speak(vocab[t].word,'together'); },250);
 }
-function wgPick(i,target){
-  var out=document.getElementById('wg-out');
-  if(i===target){
-    wgScore++;
-    out.textContent='✅ 答對了！'+vocab[target].word;
-    wgPos++;
-    speak(vocab[target].word,'together', wgRender);
-  }else{
-    out.textContent='❌ 答錯了，你點的是「'+vocab[i].word+'」，再試試看 🙂';
-    speak(vocab[i].word,'together', function(){ speak(vocab[target].word,'together'); });
-  }
+function mgPick(i,t){
+  var out=document.getElementById('mg-out');
+  if(i===t){ mgScore++; out.textContent='✅ 答對了！'+vocab[t].word+' = '+vocab[t].zh; mgPos++; speak(vocab[t].word,'together',mgRender); }
+  else{ out.textContent='❌ 答錯了，你點的是「'+vocab[i].zh+'」，再聽聽看 🙂'; speak(vocab[t].word,'together'); }
 }
 
-/* ===== 對話遊戲：念一句，選對的回答 ===== */
-var talkPairs=[
-  {q:"Hello! How are you?", a:"I'm great. How about you?", d:["My name is Ann.","Good evening."]},
-  {q:"How are you?", a:"I'm fine, thank you.", d:["See you later.","My name is Sam."]},
-  {q:"What's your name?", a:"My name is Ann.", d:["I'm great.","Good morning."]},
-  {q:"How about you?", a:"I'm fine, thank you.", d:["Goodbye.","Nice to meet you."]},
-];
-var tgOrder=[], tgPos=0, tgScore=0;
+/* ===== 關卡 4：對話配對 ===== */
+var tgOrder=[],tgPos=0,tgScore=0;
 function tgStart(){ tgOrder=shuffle(talkPairs.map(function(_,i){return i;})); tgPos=0; tgScore=0; tgRender(); }
 function tgRender(){
-  var p=document.getElementById('panel-talkgame');
+  var p=document.getElementById('body-talk');
   if(tgPos>=tgOrder.length){
-    p.innerHTML='<div class="card" style="text-align:center"><div class="en">🎉 全部過關！</div><div class="zh">答對 '+tgScore+' / '+tgOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="tgStart()">再玩一次</button></div></div>';
-    notifyOnce('talkgame','🐣 小鑽石 完成 Lesson 1 對話遊戲！答對 '+tgScore+' / '+tgOrder.length+' ⭐');
-    return;
+    p.innerHTML='<div class="card" style="text-align:center"><div class="big">🎉 對話配對全對！</div><div class="zh">答對 '+tgScore+' / '+tgOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="tgStart()">再玩一次</button></div></div>';
+    markCleared('talk','🗣️ 小鑽石 完成對話配對！答對 '+tgScore+' / '+tgOrder.length); return;
   }
   var pair=talkPairs[tgOrder[tgPos]];
   var opts=shuffle([pair.a].concat(pair.d));
-  var html='<div class="card">';
-  html+='<div class="zh" style="text-align:center">第 '+(tgPos+1)+' / '+tgOrder.length+' 題　答對 '+tgScore+'</div>';
-  html+='<div class="en" style="text-align:center">'+pair.q+'</div>';
-  html+='<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+JSON.stringify(pair.q).replace(/"/g,'&quot;')+',\'sam\')">🔊 再聽一次</button></div>';
-  html+='<div class="zh" style="text-align:center;margin:8px 0">該怎麼回答？👇</div>';
-  opts.forEach(function(o){
-    html+='<button class="opt wide" onclick="tgPick('+JSON.stringify(o).replace(/"/g,'&quot;')+','+JSON.stringify(pair.a).replace(/"/g,'&quot;')+','+JSON.stringify(pair.q).replace(/"/g,'&quot;')+')">'+o+'</button>';
-  });
-  html+='<div class="out" id="tg-out"></div></div>';
-  p.innerHTML=html;
-  setTimeout(function(){ speak(pair.q,'sam'); }, 250);
+  var h='<div class="card"><div class="zh" style="text-align:center">第 '+(tgPos+1)+' / '+tgOrder.length+' 題　答對 '+tgScore+'</div>'
+    +'<div class="en" style="text-align:center">'+pair.q+'</div>'
+    +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(pair.q)+',\'sam\')">🔊 再聽一次</button></div>'
+    +'<div class="zh" style="text-align:center;margin:8px 0">該怎麼回答？👇</div>';
+  opts.forEach(function(o){ h+='<button class="opt wide" onclick="tgPick('+js(o)+','+js(pair.a)+','+js(pair.q)+')">'+o+'</button>'; });
+  h+='<div class="out" id="tg-out"></div></div>';
+  p.innerHTML=h;
+  setTimeout(function(){ speak(pair.q,'sam'); },250);
 }
-function tgPick(picked, answer, q){
+function tgPick(picked,answer,q){
   var out=document.getElementById('tg-out');
-  if(picked===answer){
-    tgScore++;
-    out.textContent='✅ 答對了！';
-    tgPos++;
-    speak(answer,'ann', tgRender);
-  }else{
-    out.textContent='❌ 答錯了，你選的是「'+picked+'」，再試試看 🙂';
-    speak(picked,'ann', function(){ speak(q,'sam'); });
+  if(picked===answer){ tgScore++; out.textContent='✅ 答對了！'; tgPos++; speak(answer,'ann',tgRender); }
+  else{ out.textContent='❌ 答錯了，你選的是「'+picked+'」，再試試看 🙂'; speak(picked,'ann',function(){ speak(q,'sam'); }); }
+}
+
+/* ===== 關卡 5：對錯偵探（O/X） ===== */
+var ckOrder=[],ckPos=0,ckScore=0;
+function ckStart(){ ckOrder=shuffle(checkItems.map(function(_,i){return i;})); ckPos=0; ckScore=0; ckRender(); }
+function ckRender(){
+  var p=document.getElementById('body-check');
+  if(ckPos>=ckOrder.length){
+    p.innerHTML='<div class="card" style="text-align:center"><div class="big">🎉 偵探任務完成！</div><div class="zh">答對 '+ckScore+' / '+ckOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="ckStart()">再玩一次</button></div></div>';
+    markCleared('check','✅ 小鑽石 完成對錯偵探！答對 '+ckScore+' / '+ckOrder.length); return;
   }
+  var it=checkItems[ckOrder[ckPos]];
+  var h='<div class="card" style="text-align:center"><div class="zh">第 '+(ckPos+1)+' / '+ckOrder.length+' 題　答對 '+ckScore+'</div>'
+    +'<div class="en">「'+it.text+'」</div><div class="zh">這句寫得對嗎？</div>'
+    +'<div class="row" style="justify-content:center;margin-top:6px">'
+    +'<button class="opt" onclick="ckPick(true)">⭕ 對</button>'
+    +'<button class="opt gem" onclick="ckPick(false)">❌ 錯</button></div>'
+    +'<div class="out" id="ck-out"></div></div>';
+  p.innerHTML=h;
+}
+function ckPick(saysOk){
+  var it=checkItems[ckOrder[ckPos]], out=document.getElementById('ck-out');
+  if(saysOk===it.ok){ ckScore++; out.textContent='✅ 答對了！'+(it.ok?'這句正確 👍':'沒錯，是錯的——'+it.fix); ckPos++; setTimeout(ckRender,1100); }
+  else{ out.textContent=it.ok?'❌ 再看看～這句其實是「對」的喔':'❌ 再看看～這句有地方錯了：'+it.fix; }
 }
 
-/* ===== 文法（縮寫配對，不用麥克風） ===== */
-function buildGrammar(){
-  var html='<div class="card"><div class="zh">'+grammar.rule+'</div></div>';
-  grammar.quiz.forEach(function(q,i){
-    html+='<div class="card">';
-    html+='<div class="en">'+q.short+' = ?</div>';
-    html+='<div class="zh">例句：'+q.full+'（'+q.fz+'）</div>';
-    html+='<div class="row">';
-    grammar.options.forEach(function(opt){
-      html+='<button class="opt" onclick="grPick('+i+','+JSON.stringify(opt).replace(/"/g,'&quot;')+')">'+opt+'</button>';
-    });
-    html+='</div><div class="out" id="gr'+i+'-out"></div></div>';
-  });
-  document.getElementById('panel-grammar').innerHTML=html;
+/* ===== 關卡 6：STEM（科學家動作聽音選字 → 數名字長度） ===== */
+var stPhase=0,sgOrder=[],sgPos=0,sgScore=0,nqPos=0,nqScore=0;
+function stStart(){ stPhase=0; sgOrder=shuffle(stemWords.map(function(_,i){return i;})); sgPos=0; sgScore=0; nqPos=0; nqScore=0; stRender(); }
+function stRender(){
+  var p=document.getElementById('body-stem');
+  if(stPhase===0){
+    if(sgPos>=sgOrder.length){ stPhase=1; stRender(); return; }
+    var t=sgOrder[sgPos];
+    var h='<div class="card" style="text-align:center"><div class="zh">🔬 科學家動作　第 '+(sgPos+1)+' / '+sgOrder.length+' 個</div>'
+      +'<div class="en">聽一聽，這是哪個動作？</div>'
+      +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(stemWords[t].word)+',\'together\')">🔊 再聽一次</button></div>'
+      +'<div class="game-grid">';
+    shuffle(stemWords.map(function(_,i){return i;})).forEach(function(i){ h+='<button class="opt gem" onclick="sgPick('+i+','+t+')">'+stemWords[i].emo+' '+stemWords[i].word+'<br><small>'+stemWords[i].zh+'</small></button>'; });
+    h+='</div><div class="out" id="sg-out"></div></div>';
+    p.innerHTML=h;
+    setTimeout(function(){ speak(stemWords[t].word,'together'); },250);
+    return;
+  }
+  // phase 1：數名字長度
+  if(nqPos>=nameQuiz.length){
+    p.innerHTML='<div class="card" style="text-align:center"><div class="big">🎉 STEM 全部過關！</div><div class="zh">科學家動作 '+sgScore+'/'+sgOrder.length+'　名字長度 '+nqScore+'/'+nameQuiz.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="stStart()">再玩一次</button></div></div>';
+    markCleared('stem','🔬 小鑽石 完成 STEM 闖關！科學家動作＋數名字長度都過關 🧪'); return;
+  }
+  var q=nameQuiz[nqPos];
+  var h='<div class="card" style="text-align:center"><div class="zh">📏 數一數名字　第 '+(nqPos+1)+' / '+nameQuiz.length+' 題</div>'
+    +'<div class="en">'+q.ask+'</div><div class="game-grid">';
+  shuffle(q.names).forEach(function(n){ h+='<button class="opt" onclick="nqPick('+js(n)+')">'+n+'<br><small>'+n.length+' 個字母</small></button>'; });
+  h+='</div><div class="out" id="nq-out"></div></div>';
+  p.innerHTML=h;
 }
-function grPick(i,opt){
-  var q=grammar.quiz[i], out=document.getElementById('gr'+i+'-out');
-  if(opt===q.answer){ out.textContent='✅ 答對了！'+q.short+' = '+q.answer+'　'+q.full; speak(q.full,'ann'); }
-  else { out.textContent='❌ 再想想看，'+q.short+' 是哪兩個字？'; }
+function sgPick(i,t){
+  var out=document.getElementById('sg-out');
+  if(i===t){ sgScore++; out.textContent='✅ 答對了！'+stemWords[t].word+' = '+stemWords[t].zh; sgPos++; speak(stemWords[t].word,'together',stRender); }
+  else{ out.textContent='❌ 答錯了，你點的是「'+stemWords[i].zh+'」，再聽聽看 🙂'; speak(stemWords[t].word,'together'); }
+}
+function nqPick(name){
+  var q=nameQuiz[nqPos], out=document.getElementById('nq-out');
+  if(name===q.answer){ nqScore++; out.textContent='✅ 答對了！'+q.answer+' 有 '+q.answer.length+' 個字母'; nqPos++; setTimeout(stRender,1100); }
+  else{ out.textContent='❌ 再數數看～「'+name+'」有 '+name.length+' 個字母'; }
 }
 
-function switchTab(t){
-  ['dialog','vocab','grammar','wordgame','talkgame'].forEach(function(name){
-    document.getElementById('tab-'+name).classList.toggle('active', t===name);
-    document.getElementById('panel-'+name).classList.toggle('hide', t!==name);
-  });
-  if(t==='wordgame') wgStart();
-  if(t==='talkgame') tgStart();
-}
-
+/* ===== 啟動 ===== */
+buildShell();
 buildDialog();
 buildVocab();
-buildGrammar();
-updateProgress();
+mgStart(); tgStart(); ckStart(); stStart();
+renderDots();
+STAGES.forEach(function(s){ markStageUI(s.key); });
+checkAllDone();
 if(window.speechSynthesis) speechSynthesis.getVoices();
 </script>
 </body>

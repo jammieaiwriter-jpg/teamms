@@ -68,6 +68,11 @@
     button.opt.gem{border-color:var(--gem);color:var(--gem-dark);}
     button.opt:active{background:var(--mint);}
     .big{font-size:clamp(26px,7vw,40px);font-weight:900;color:var(--accent-dark);}
+    .err{color:#e11d48;font-weight:900;text-decoration:underline wavy #e11d48;}
+    .fixh{color:var(--green);font-weight:900;}
+    .reveal{margin-top:12px;font-size:16px;line-height:1.7;text-align:center;}
+    .reveal .sent{font-size:22px;font-weight:800;}
+    button.next{background:var(--gem);color:#fff;border:0;border-radius:10px;padding:11px 20px;min-height:48px;font-weight:900;font-size:16px;cursor:pointer;margin-top:12px;}
 
     .banner{display:none;text-align:center;border:2px dashed var(--accent);border-radius:18px;
       background:linear-gradient(180deg,#fff,#fff0f7);padding:22px;margin-top:8px;}
@@ -131,13 +136,14 @@ var talkPairs=[
   {q:"Hello! How are you?", a:"I'm great. How about you?", d:["Good evening.","My name is Ann."]},
 ];
 /* ---- 對錯偵探（課本 O/X 題：大小寫 / 標點）---- */
+// bad=錯的地方、fixTok=改好的字、correct=正確全句、fix=說明
 var checkItems=[
-  {text:"how are you?", ok:false, fix:"開頭要大寫、句尾問號：How are you?"},
-  {text:"My name is Sam.", ok:true,  fix:""},
-  {text:"My name is tom.", ok:false, fix:"名字 Tom 開頭要大寫：My name is Tom."},
-  {text:"Good morning.", ok:true,  fix:""},
-  {text:"what's your name?", ok:false, fix:"開頭要大寫：What's your name?"},
-  {text:"Nice to meet you.", ok:true,  fix:""},
+  {text:"how are you?", ok:false, bad:"how", fixTok:"How", correct:"How are you?", fix:"句子開頭第一個字要大寫。"},
+  {text:"My name is Sam.", ok:true},
+  {text:"My name is tom.", ok:false, bad:"tom", fixTok:"Tom", correct:"My name is Tom.", fix:"人的名字開頭要大寫。"},
+  {text:"Good morning.", ok:true},
+  {text:"what's your name?", ok:false, bad:"what's", fixTok:"What's", correct:"What's your name?", fix:"句子開頭第一個字要大寫。"},
+  {text:"Nice to meet you.", ok:true},
 ];
 /* ---- STEM Skill：科學家動作字（看描述→選對的動作，考理解不只考聽力）---- */
 var stemWords=[
@@ -393,15 +399,40 @@ function ckRender(){
   var h='<div class="card" style="text-align:center"><div class="zh">第 '+(ckPos+1)+' / '+ckOrder.length+' 題　答對 '+ckScore+'</div>'
     +'<div class="en">「'+it.text+'」</div><div class="zh">這句寫得對嗎？</div>'
     +'<div class="row" style="justify-content:center;margin-top:6px">'
-    +'<button class="opt" onclick="ckPick(true)">⭕ 對</button>'
-    +'<button class="opt gem" onclick="ckPick(false)">❌ 錯</button></div>'
-    +'<div class="out" id="ck-out"></div></div>';
+    +'<button class="opt" id="ck-yes" onclick="ckPick(true)">⭕ 對</button>'
+    +'<button class="opt gem" id="ck-no" onclick="ckPick(false)">❌ 錯</button></div>'
+    +'<div class="reveal" id="ck-reveal"></div>'
+    +'<button class="next" id="ck-next" style="display:none" onclick="ckNext()">下一題 →</button></div>';
   p.innerHTML=h;
 }
+function ckEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function ckHL(text,tok,cls){ var i=text.indexOf(tok); if(i<0) return ckEsc(text); return ckEsc(text.slice(0,i))+'<span class="'+cls+'">'+ckEsc(tok)+'</span>'+ckEsc(text.slice(i+tok.length)); }
 function ckPick(saysOk){
-  var it=checkItems[ckOrder[ckPos]], out=document.getElementById('ck-out');
-  if(saysOk===it.ok){ ckScore++; out.textContent='✅ 答對了！'+(it.ok?'這句正確 👍':'沒錯，是錯的——'+it.fix); ckPos++; setTimeout(ckRender,1100); }
-  else{ out.textContent=it.ok?'❌ 再看看～這句其實是「對」的喔':'❌ 再看看～這句有地方錯了：'+it.fix; }
+  var it=checkItems[ckOrder[ckPos]];
+  var correct=(saysOk===it.ok);
+  if(correct) ckScore++;
+  var y=document.getElementById('ck-yes'), n=document.getElementById('ck-no');
+  if(y) y.disabled=true; if(n) n.disabled=true;
+  var html=correct?'<div style="color:var(--green);font-weight:900;font-size:18px">✅ 答對了！</div>'
+                  :'<div style="color:#e11d48;font-weight:900;font-size:18px">❌ 答錯了，看看正確答案</div>';
+  if(it.ok){
+    html+='<div class="reveal">這句寫得<b>對</b> 👍<br><span class="sent">'+ckEsc(it.text)+'</span></div>';
+  }else{
+    html+='<div class="reveal">這句<b>錯</b>了！錯在紅色的地方 👇<br>'
+      +'<span class="sent">'+ckHL(it.text,it.bad,'err')+'</span>'
+      +'<br>✏️ 正確要寫成：<br><span class="sent">'+ckHL(it.correct,it.fixTok,'fixh')+'</span>'
+      +'<br><small style="color:var(--muted)">'+it.fix+'</small></div>';
+  }
+  document.getElementById('ck-reveal').innerHTML=html;
+  document.getElementById('ck-next').style.display='inline-flex';
+}
+function ckNext(){
+  ckPos++;
+  if(ckPos>=ckOrder.length){
+    document.getElementById('body-check').innerHTML='<div class="card" style="text-align:center"><div class="big">🎉 偵探任務完成！</div><div class="zh">答對 '+ckScore+' / '+ckOrder.length+'</div><div class="row" style="justify-content:center"><button class="act start" onclick="ckStart()">再玩一次</button></div></div>';
+    markCleared('check','✅ 小鑽石 完成對錯偵探！答對 '+ckScore+' / '+ckOrder.length); return;
+  }
+  ckRender();
 }
 
 /* ===== 關卡 6：STEM（科學家動作聽音選字 → 數名字長度） ===== */

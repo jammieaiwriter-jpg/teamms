@@ -339,18 +339,19 @@ function mgRender(){
   var t=mgOrder[mgPos];
   var opts=shuffle([t].concat(shuffle(vocab.map(function(_,i){return i;}).filter(function(i){return i!==t;})).slice(0,3)));
   var h='<div class="card" style="text-align:center"><div class="zh">第 '+(mgPos+1)+' / '+mgOrder.length+' 題　答對 '+mgScore+'</div>'
-    +'<div class="big" style="font-size:46px">'+vocab[t].emo+'</div>'
-    +'<div class="en">「'+vocab[t].zh+'」用英文怎麼說？</div>'
-    +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(vocab[t].word)+',\'together\')">🔊 提示（聽英文）</button></div>'
+    +'<div class="big" style="font-size:40px">👂</div>'
+    +'<div class="en">聽一聽，這是哪個字？</div>'
+    +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(vocab[t].word)+',\'together\')">🔊 再聽一次</button></div>'
     +'<div class="game-grid">';
   opts.forEach(function(i){ h+='<button class="opt gem" onclick="mgPick('+i+','+t+')">'+vocab[i].word+'</button>'; });
   h+='</div><div class="out" id="mg-out"></div></div>';
   p.innerHTML=h;
+  setTimeout(function(){ speak(vocab[t].word,'together'); },250);
 }
 function mgPick(i,t){
   var out=document.getElementById('mg-out');
-  if(i===t){ mgScore++; out.textContent='✅ 答對了！'+vocab[t].zh+' = '+vocab[t].word; mgPos++; speak(vocab[t].word,'together',mgRender); }
-  else{ out.textContent='❌ 答錯了，你點的是「'+vocab[i].word+'」（'+vocab[i].zh+'），再想想看 🙂'; speak(vocab[i].word,'together'); }
+  if(i===t){ mgScore++; out.textContent='✅ 答對了！'+vocab[t].word+'（'+vocab[t].zh+'）'; mgPos++; speak(vocab[t].word,'together',mgRender); }
+  else{ out.textContent='❌ 答錯了，你點的是「'+vocab[i].word+'」，再聽聽看 🙂'; speak(vocab[t].word,'together'); }
 }
 
 /* ===== 關卡 4：對話配對 ===== */
@@ -412,13 +413,14 @@ function stRender(){
     if(sgPos>=sgOrder.length){ stPhase=1; stRender(); return; }
     var t=sgOrder[sgPos];
     var h='<div class="card" style="text-align:center"><div class="zh">🔬 科學家動作　第 '+(sgPos+1)+' / '+sgOrder.length+' 個</div>'
-      +'<div class="big" style="font-size:40px">'+stemWords[t].emo+'</div>'
-      +'<div class="en" style="font-size:20px;line-height:1.3">'+stemWords[t].desc+'</div>'
-      +'<div class="zh">科學家在做這件事，這是哪個動作？選對的英文 👇</div>'
+      +'<div class="big" style="font-size:40px">👂</div>'
+      +'<div class="en">聽一聽，這是哪個動作？</div>'
+      +'<div class="row" style="justify-content:center"><button class="act listen" onclick="speak('+js(stemWords[t].word)+',\'together\')">🔊 再聽一次</button></div>'
       +'<div class="game-grid">';
-    shuffle(stemWords.map(function(_,i){return i;})).forEach(function(i){ h+='<button class="opt gem" onclick="sgPick('+i+','+t+')">'+stemWords[i].word+'<br><small>'+stemWords[i].zh+'</small></button>'; });
+    shuffle(stemWords.map(function(_,i){return i;})).forEach(function(i){ h+='<button class="opt gem" onclick="sgPick('+i+','+t+')">'+stemWords[i].word+'</button>'; });
     h+='</div><div class="out" id="sg-out"></div></div>';
     p.innerHTML=h;
+    setTimeout(function(){ speak(stemWords[t].word,'together'); },250);
     return;
   }
   // phase 1：數名字長度
@@ -436,7 +438,7 @@ function stRender(){
 function sgPick(i,t){
   var out=document.getElementById('sg-out');
   if(i===t){ sgScore++; out.textContent='✅ 答對了！'+stemWords[t].word+' = '+stemWords[t].zh; sgPos++; speak(stemWords[t].word,'together',stRender); }
-  else{ out.textContent='❌ 答錯了，你選的是「'+stemWords[i].word+'」（'+stemWords[i].zh+'），再讀一次題目想想看 🙂'; }
+  else{ out.textContent='❌ 答錯了，你選的是「'+stemWords[i].word+'」。提示：'+stemWords[t].desc+'　再聽一次選選看 🙂'; speak(stemWords[t].word,'together'); }
 }
 function nqPick(name){
   var q=nameQuiz[nqPos], out=document.getElementById('nq-out');

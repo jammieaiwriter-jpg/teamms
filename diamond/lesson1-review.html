@@ -357,7 +357,11 @@ function mgRender(){
 function mgPick(i,t){
   var out=document.getElementById('mg-out');
   if(i===t){ mgScore++; out.textContent='✅ 答對了！'+vocab[t].word+'（'+vocab[t].zh+'）'; mgPos++; speak(vocab[t].word,'together',mgRender); }
-  else{ out.textContent='❌ 答錯了，你點的是「'+vocab[i].word+'」，再聽聽看 🙂'; speak(vocab[t].word,'together'); }
+  else{
+    out.textContent='❌ 你點的是「'+vocab[i].word+'」，正確答案再聽一次，重選看看 🙂';
+    // 先念點錯的那個英文，念完再念正確的，讓孩子多聽多練，然後留在原題重選
+    speak(vocab[i].word,'together', function(){ speak(vocab[t].word,'together'); });
+  }
 }
 
 /* ===== 關卡 4：對話配對 ===== */

@@ -86,7 +86,7 @@
     <h1><span class="gem">💎</span> 小鑽石 Lesson 1 複習</h1>
     <a class="pre-link" href="./lesson1-pre.html?v=v2-20260627">← 回預習</a>
   </header>
-  <p class="hint">用平板的 Chrome 分頁開。一關一關闖：先按「🔊 聽」，再按「🎤 開始念」，念完按「⏹ 念好了」就打星。遊戲關不用麥克風。第一次念要允許麥克風。</p>
+  <p class="hint">用平板的 Chrome 分頁開。一關一關闖：先按「🔊 聽」，再按「🎤 開始念」，念完按「⏹ 念好了」就打星。遊戲關不用麥克風。第一次念要允許麥克風。<b>若完全沒聲音：把平板「媒體音量」調大、關掉靜音，再點一下「🔊 聽」。</b></p>
 
   <div class="progress-bar"><div class="dots" id="dots"></div></div>
 
@@ -205,7 +205,16 @@ function pickVoice(role){
   for(var i=0;i<pref.length;i++){ var hits=good.filter(function(v){return v.name.indexOf(pref[i])>=0;}); if(hits.length) return best(hits); }
   return best(good);
 }
+/* 第一次點任何地方就「喚醒」語音引擎（Android/iOS 需要使用者手勢才肯出聲）。
+   喚醒前不自動播放，否則會被瀏覽器擋下、甚至把引擎卡住變成整頁沒聲音。 */
+var primed=false;
+function primeVoice(){
+  if(primed) return; primed=true;
+  try{ window.speechSynthesis.resume(); var u=new SpeechSynthesisUtterance(' '); u.volume=0; window.speechSynthesis.speak(u); }catch(e){}
+}
+function autoSpeak(text,role){ if(primed) speak(text,role); }
 function speak(text,role,onEnd){
+  primed=true;
   var seq=++speakSeq,done=false;
   function finish(){ if(done||seq!==speakSeq)return; done=true; if(onEnd)onEnd(); }
   try{
@@ -215,6 +224,7 @@ function speak(text,role,onEnd){
     var v=pickVoice(role); if(v)u.voice=v;
     if(onEnd){ u.onend=finish; u.onerror=finish; }
     window.speechSynthesis.speak(u);
+    setTimeout(function(){ try{ window.speechSynthesis.resume(); }catch(_){} },90); // Android Chrome 保活
   }catch(e){ finish(); }
 }
 
@@ -408,7 +418,7 @@ function qMatch(t){ return { mount:function(qEl,outEl,phase,settle){
     if(i===t){ outEl.textContent='✅ 答對了！'+vocab[t].word+'（'+vocab[t].zh+'）'; disableAll(grid); speak(vocab[t].word,'together'); settle(firstTry); }
     else{ firstTry=false; outEl.textContent='❌ 你點的是「'+vocab[i].word+'」，正確答案再聽一次 🙂'; speak(vocab[i].word,'together',function(){ speak(vocab[t].word,'together'); }); }
   };
-  setTimeout(function(){ speak(vocab[t].word,'together'); },250);
+  setTimeout(function(){ autoSpeak(vocab[t].word,'together'); },250);
 }}; }
 
 /* ---- 對話配對：聽問句→選對的回答（答錯留原題重選） ---- */
@@ -425,7 +435,7 @@ function qTalk(pi){ var pair=talkPairs[pi]; return { mount:function(qEl,outEl,ph
     if(o===pair.a){ outEl.textContent='✅ 答對了！'; disableAll(box); speak(pair.a,'ann'); settle(firstTry); }
     else{ firstTry=false; outEl.textContent='❌ 你選的是「'+o+'」，再試試看 🙂'; speak(o,'ann',function(){ speak(pair.q,'sam'); }); }
   };
-  setTimeout(function(){ speak(pair.q,'sam'); },250);
+  setTimeout(function(){ autoSpeak(pair.q,'sam'); },250);
 }}; }
 
 /* ---- 對錯偵探：答一次就揭曉、標紅錯字（猜對也再看一次） ---- */
@@ -463,7 +473,7 @@ function qStemWord(t){ return { mount:function(qEl,outEl,phase,settle){
     if(i===t){ outEl.textContent='✅ 答對了！'+stemWords[t].word+' = '+stemWords[t].zh; disableAll(grid); speak(stemWords[t].word,'together'); settle(firstTry); }
     else{ firstTry=false; outEl.textContent='❌ 你選的是「'+stemWords[i].word+'」。中文提示：'+stemWords[t].desc; speak(stemWords[t].en,'together'); }
   };
-  setTimeout(function(){ speak(stemWords[t].en,'together'); },250);
+  setTimeout(function(){ autoSpeak(stemWords[t].en,'together'); },250);
 }}; }
 
 /* ---- STEM 數名字長度（答錯留原題重數） ---- */
@@ -493,6 +503,9 @@ renderDots();
 STAGES.forEach(function(s){ markStageUI(s.key); });
 checkAllDone();
 if(window.speechSynthesis) speechSynthesis.getVoices();
+// 第一次點任何地方就喚醒語音引擎（手勢解鎖），之後自動播放才會有聲音
+document.addEventListener('pointerdown', primeVoice, true);
+document.addEventListener('touchstart', primeVoice, true);
 </script>
 </body>
 </html>

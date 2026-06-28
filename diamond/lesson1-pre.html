@@ -152,7 +152,7 @@ function pickBrowserVoice(role){
   var voice=null;
   for(var i=0;i<pref.length;i++){ voice=en.find(function(v){ return (v.name||"").indexOf(pref[i])>=0; }); if(voice)break; }
   if(!voice) voice=en.find(function(v){ return v.lang==="en-US"; })||en[0];
-  return {voice:voice,pitch:role==="sam"?0.85:1.1,rate:0.72};
+  return {voice:voice,pitch:role==="sam"?0.85:1.1,rate:0.68};
 }
 function speakBrowser(text,role,onEnd){
   var p=pickBrowserVoice(role);
